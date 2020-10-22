@@ -39,8 +39,8 @@ The code is tested with PyTorch 1.6.0 and CUDA 10.2. **NOTE**: The pretrained mo
 
 ## Released Model Benchmark
 
-**NOTE**: The test set is VOX1-O(cleaned) dataset and training set is VoxCeleb2-dev. Backend is cosine similarity scoring.
+**NOTE**: The test set is VOX1-O(cleaned) dataset and training set is VoxCeleb2-dev. Backend is cosine similarity scoring. The minDCF criterion is the same as  VoxSRC2020.
 
 | Model | Backbone          | Metric | feature | config | raw EER | raw DCF | checkpoint |
 |:---------:|:-----------------:|:------------:|:------------:|:------------:|:------------:|--------------|:------------:|
-| ResNet34-AM-VoxCeleb2 | ResNet34       | AMSoftmax, scale=30, margin=0.2 | 81 FBANK(including energy) | [conf](configs/asv/classifier/vox2_resnet34_b128x4.py) | 1.207 | 0.0738 | will be released soon |
+| ResNet34-AM-VoxCeleb2 | ResNet34       | AMSoftmax, scale=30, margin=0.2 | 81 FBANK(including energy) | [conf](configs/asv/classifier/vox2_resnet34_b128x4.py) | 1.207 | 0.0738 | [ckpt](https://drive.google.com/file/d/1d5cJQsLNUrZ3-IIiBPI8l-7W7G_jqKV8/view?usp=sharing) |
