@@ -20,9 +20,9 @@ def parse_opt():
     parser.add_argument("--enroll_embedding_path", type=str, default="./xvector_train/vector.scp")
     parser.add_argument("--is_mean", type=int, default=0)
     parser.add_argument("--mean_vec", type=str, default="self")
-    parser.add_argument("--train_embedding_path", type=str, default="/data2/zhengyu/plda_model/ResNet/model_28/plda_save/vector.scp")
-    parser.add_argument('--trial_list', type=str, default="./data/nist/sre_pair")
-    parser.add_argument('--result_cosine', type=str, default='/data5/zhengyu/tdnn_feat_test')
+    parser.add_argument("--train_embedding_path", type=str, default="")
+    parser.add_argument('--trial_list', type=str, default="")
+    parser.add_argument('--result_cosine', type=str, default='')
     args = parser.parse_args()
     return args
 
