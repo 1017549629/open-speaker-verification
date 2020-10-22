@@ -68,6 +68,10 @@ class ResNet_CIFAR(ResNet):
         self.relu = nn.ReLU(inplace=True)
 
     def forward(self, x):
+        if len(x.shape) == 3:
+            # audio format
+            x.unsqueeze_(1)
+            x = x.transpose(2, 3)
         x = self.conv1(x)
         x = self.norm1(x)
         x = self.relu(x)

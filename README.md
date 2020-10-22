@@ -1,61 +1,46 @@
-<div align="center">
-  <img src="resources/mmcls-logo.png" width="600"/>
-</div>
 
-[![Build Status](https://github.com/open-mmlab/mmclassification/workflows/build/badge.svg)](https://github.com/open-mmlab/mmclassification/actions)
-[![Documentation Status](https://readthedocs.org/projects/mmclassification/badge/?version=latest)](https://mmclassification.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/open-mmlab/mmclassification/branch/master/graph/badge.svg)](https://codecov.io/gh/open-mmlab/mmclassification)
-[![license](https://img.shields.io/github/license/open-mmlab/mmclassification.svg)](https://github.com/open-mmlab/mmclassification/blob/master/LICENSE)
+# Open Speaker Verification
+
+## News
+
+[10/25/2020] I have released my baseline system ResNet34-AM-VoxCeleb2 based on **mmclassification**. Thanks to [mmclassification](https://github.com/open-mmlab/mmclassification), I can fully utilize all the functions and modules provided without paying a lot attention on the training process.
 
 ## Introduction
 
-MMClassification is an open source image classification toolbox based on PyTorch. It is
-a part of the [OpenMMLab](https://open-mmlab.github.io/) project.
+This is a repo intended to provide an open speaker verification tool. Currently this project only provides a training and extraction process. More fundamental functions like feature extraction, post processing, scoring backends and augmentation research will be updated later.
+The project is based on [mmclassification codebase](https://github.com/open-mmlab/mmclassification).
+Please refer to [mmclassification  readme](README.mmclassification.md) for installation and running scripts.
+The code is tested with PyTorch 1.6.0 and CUDA 10.2. **NOTE**: The pretrained model is saved in PyTorch 1.6.0. So if you are using older versions, you may need to upgrade your PyTorch Version to 1.6.0+ to load our released model.
 
-Documentation: https://mmclassification.readthedocs.io/en/latest/
+## Attribute
 
-![demo](https://user-images.githubusercontent.com/9102141/87268895-3e0d0780-c4fe-11ea-849e-6140b7e0d4de.gif)
+### dataset
 
-### Major features
+- [x] [random speaker dataset](mmcls/datasets/speaker_dataset.py)
+- [ ] balanced speaker dataset
+- [ ] dynamic speaker dataset
 
-- Various backbones and pretrained models
-- Bag of training tricks
-- Large-scale training configs
-- High efficiency and extensibility
+### backbone
 
-## License
+- [x] [ResNet34](mmcls/models/backbones/resnet_cifar.py)
+- [ ] SEResNet34
+- [ ] SEResNet34-MSEA
+- [ ] RES-SE-TDNN
 
-This project is released under the [Apache 2.0 license](LICENSE).
+### Pooling Method
 
-## Benchmark and model zoo
+- [x] [STATS pooling](mmcls/models/necks/STP.py)
+- [ ] Self-Attention pooling
+- [ ] MultiHeadAttention pooling
 
-Results and models are available in the [model zoo](docs/model_zoo.md).
+### Metric
 
-Supported backbones:
-- [x] ResNet
-- [x] ResNeXt
-- [x] SE-ResNet
-- [x] SE-ResNeXt
-- [x] RegNet
-- [x] ShuffleNetV1
-- [x] ShuffleNetV2
-- [x] MobileNetV2
-- [x] MobileNetV3
+- [x] [AmSoftmax](mmcls/models/heads/am_head.py)
 
-## Installation
+## Released Model Benchmark
 
-Please refer to [install.md](docs/install.md) for installation and dataset preparation.
+**NOTE**: The test set is VOX1-O(cleaned) dataset and training set is VoxCeleb2-dev. Backend is cosine similarity scoring.
 
-## Getting Started
-
-Please see [getting_started.md](docs/getting_started.md) for the basic usage of MMClassification. There are also tutorials for [finetuning models](docs/tutorials/finetune.md), [adding new dataset](docs/tutorials/new_dataset.md), [designing data pipeline](docs/tutorials/data_pipeline.md), and [adding new modules](docs/tutorials/new_modules.md).
-
-## Contributing
-
-We appreciate all contributions to improve MMClassification.
-Please refer to [CONTRUBUTING.md](.github/CONTRIBUTING.md) for the contributing guideline.
-
-## Acknowledgement
-
-MMClassification is an open source project that is contributed by researchers and engineers from various colleges and companies. We appreciate all the contributors who implement their methods or add new features, as well as users who give valuable feedbacks.
-We wish that the toolbox and benchmark could serve the growing research community by providing a flexible toolkit to reimplement existing methods and develop their own new classifiers.
+| Model | Backbone          | Metric | feature | config | raw EER | raw DCF | checkpoint |
+|:---------:|:-----------------:|:------------:|:------------:|:------------:|:------------:|--------------|:------------:|
+| ResNet34-AM-VoxCeleb2 | ResNet34       | AMSoftmax, scale=30, margin=0.2 | 81 FBANK(including energy) | [conf](configs/asv/classifier/vox2_resnet34_b128x4.py) | 1.207 | 0.0738 | will be released soon |

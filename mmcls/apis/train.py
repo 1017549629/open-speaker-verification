@@ -6,7 +6,8 @@ from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmcv.runner import DistSamplerSeedHook, EpochBasedRunner, build_optimizer
 
 from mmcls.core import (DistEvalHook, DistOptimizerHook, EvalHook,
-                        Fp16OptimizerHook)
+                        Fp16OptimizerHook, ReduceLROnPlateauHook,
+                        DistReduceLROnPlateauHook)
 from mmcls.datasets import build_dataloader, build_dataset
 from mmcls.utils import get_root_logger
 
@@ -90,15 +91,17 @@ def train_model(model,
         optimizer_config = cfg.optimizer_config
 
     # register hooks
-    runner.register_training_hooks(cfg.lr_config, optimizer_config,
+    runner.register_training_hooks(cfg.get("lr_config",None), optimizer_config,
                                    cfg.checkpoint_config, cfg.log_config,
                                    cfg.get('momentum_config', None))
+
     if distributed:
         runner.register_hook(DistSamplerSeedHook())
 
     # register eval hooks
     if validate:
-        val_dataset = build_dataset(cfg.data.val, dict(test_mode=True))
+        val_dataset = build_dataset(cfg.data.val)
+        val_dataset.test_mode = True
         val_dataloader = build_dataloader(
             val_dataset,
             samples_per_gpu=cfg.data.samples_per_gpu,
@@ -109,6 +112,18 @@ def train_model(model,
         eval_cfg = cfg.get('evaluation', {})
         eval_hook = DistEvalHook if distributed else EvalHook
         runner.register_hook(eval_hook(val_dataloader, **eval_cfg))
+
+
+        if cfg.get("LRReducer", None) is not None:
+            LRReducer_hook = DistReduceLROnPlateauHook if distributed \
+                else ReduceLROnPlateauHook
+            interval = cfg.LRReducer.get("interval", 10000)
+            patience = cfg.LRReducer.get("patience", 2)
+            gamma = cfg.LRReducer.get("gamma", 0.1)
+            # print("interval:", interval)
+            runner.register_hook(
+                LRReducer_hook(val_dataloader,
+                               interval, patience, gamma))
 
     if cfg.resume_from:
         runner.resume(cfg.resume_from)
