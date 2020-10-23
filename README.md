@@ -44,4 +44,4 @@ The code is tested with PyTorch 1.6.0 and CUDA 10.2. **NOTE**: The pretrained mo
 | Model | Backbone          | Metric | feature | config | raw EER | raw DCF | checkpoint |
 |:---------:|:-----------------:|:------------:|:------------:|:------------:|:------------:|--------------|:------------:|
 | ResNet34-AM-VoxCeleb2 | ResNet34       | AMSoftmax, scale=30, margin=0.2 | 81 FBANK(including energy) | [conf](configs/asv/classifier/vox2_resnet34_b128x4.py) | 1.207 | 0.0738 | [ckpt](https://drive.google.com/file/d/1d5cJQsLNUrZ3-IIiBPI8l-7W7G_jqKV8/view?usp=sharing) |
-| ResNet34-AM-VoxCeleb2-syncBN | ResNet34 | AMSoftmax, scale=30, margin=0.2 | 81 FBANK(including energy) | [conf](configs/asv/classifier/vox2_resnet34_b128x4_syncBN.py) | 1.196 | 0.0791 | released soon |
+| ResNet34-AM-VoxCeleb2-syncBN | ResNet34 | AMSoftmax, scale=30, margin=0.2 | 81 FBANK(including energy) | [conf](configs/asv/classifier/vox2_resnet34_b128x4_syncBN.py) | 1.196 | 0.0791 | [ckpt](https://drive.google.com/file/d/1rJ9tMGU4OVXQwF66e0Z-0scDc9MmipHo/view?usp=sharing) |
