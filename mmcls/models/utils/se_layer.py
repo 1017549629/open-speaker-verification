@@ -1,6 +1,8 @@
 import mmcv
 import torch.nn as nn
+import torch
 from mmcv.cnn import ConvModule
+from mmcv.cnn import build_activation_layer
 
 
 class SELayer(nn.Module):
@@ -51,3 +53,33 @@ class SELayer(nn.Module):
         out = self.conv1(out)
         out = self.conv2(out)
         return x * out
+
+
+class SELayer1D(nn.Module):
+    """
+    Some theory tells that SE layer using conv1d or conv2d with kernel size as 1 is better than
+    just using linear layer
+    """
+    def __init__(self, channel, reduction=16, nonlinearity="LeakyReLU", bias=False):
+        super(SELayer1D, self).__init__()
+        in_channel = channel
+        self.fc = nn.Sequential(
+            nn.Conv1d(in_channel, channel//reduction, kernel_size=1, bias=bias),
+            build_activation_layer(dict(type=nonlinearity, inplace=True)),
+            nn.Conv1d(channel//reduction, channel, kernel_size=1, bias=bias),
+            nn.Sigmoid(),
+        )
+
+    def forward(self, x):
+        batch, channel, _ = x.size()
+        y = torch.mean(x, -1)
+        y = y.unsqueeze(-1)
+        y = self.fc(y)
+        return x*y.expand_as(x)
+
+
+if __name__ == "__main__":
+    se1d = SELayer1D(128, nonlinearity="ReLU")
+    data = torch.rand(2, 128, 56)
+    print(se1d)
+    print(se1d(data).shape)
