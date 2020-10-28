@@ -4,6 +4,7 @@ from mmcv.cnn import build_conv_layer, build_norm_layer
 from ..builder import BACKBONES
 from .resnet import ResNet, BasicBlock, ResLayer
 from mmcls.models.utils import SELayer
+import torch.utils.checkpoint as cp
 
 
 class SEBasicBlock(BasicBlock):

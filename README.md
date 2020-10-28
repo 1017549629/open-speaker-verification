@@ -12,6 +12,12 @@ The project is based on [mmclassification codebase](https://github.com/open-mmla
 Please refer to [mmclassification  readme](README.mmclassification.md) for installation and running scripts.
 The code is tested with PyTorch 1.6.0 and CUDA 10.2. **NOTE**: The pretrained model is saved in PyTorch 1.6.0. So if you are using older versions, you may need to upgrade your PyTorch Version to 1.6.0+ to load our released model.
 
+## Data preparation
+
+All features adopted in our training frameworks are extracted from [Kaldi](https://github.com/kaldi-asr/kaldi), cepstral mean and variance normalized(CMVN) and no VAD implemented.
+
+Preparation scripts will be released soon.
+
 ## Attribute
 
 ### dataset

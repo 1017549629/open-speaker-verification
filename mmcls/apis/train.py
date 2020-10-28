@@ -10,7 +10,7 @@ from mmcls.core import (DistEvalHook, DistOptimizerHook, EvalHook,
                         DistReduceLROnPlateauHook)
 from mmcls.datasets import build_dataloader, build_dataset
 from mmcls.utils import get_root_logger
-
+import torch.utils.checkpoint as cp
 
 def set_random_seed(seed, deterministic=False):
     """Set random seed.
