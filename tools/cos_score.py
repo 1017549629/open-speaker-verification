@@ -1,14 +1,6 @@
-import collections
 import argparse
-import os
-import logging
-import time
 from kaldiio import ReadHelper
-import kaldiio
-import torch
-import torch.nn as nn
-import torch.utils.data
-from sklearn import metrics
+import tqdm
 import numpy as np
 from collections import defaultdict
 
@@ -36,27 +28,42 @@ def normalize(mat):
 def generate_score(enroll_mat, test_mat, enroll_idx_dict,
                    test_idx_dict, test_pair, result_path):
     print("test_pair: ", test_pair)
-    """calculate EER"""
-    "Since the whole matrix is way too big num_enroll*num_test, we could slice our matrix"
-    enroll_mat = normalize(enroll_mat)
-    test_mat = normalize(test_mat)
-    scores = np.matmul(enroll_mat, test_mat.T)
-    # print(scores.shape)
-
+    output_dict = {}
     with open(test_pair, "r", encoding="utf-8") as f:
         lines = f.readlines()
-    with open(result_path, "w", encoding="utf-8") as f:
-        for line in lines:
+        for line in tqdm.tqdm(lines):
             new_line = line.strip().split(" ")
             if len(new_line) == 2:
                 key1, key2 = new_line
             else:
                 key1, key2, label = new_line
-            if key1 in enroll_idx_dict and key2 in test_idx_dict:
-                id1 = enroll_idx_dict[key1]
-                id2 = test_idx_dict[key2]
-                distance = scores[id1, id2]
-                f.write(key1 + " " + key2 + " " + str(distance) + "\n")
+            if key1 in output_dict:
+                output_dict[key1].append(key2)
+            else:
+                output_dict[key1] = [key2]
+
+    inverse_enroll_idx_dict = {v:k for k,v in enroll_idx_dict.items()}
+    """calculate EER"""
+    "Since the whole matrix is way too big num_enroll*num_test, we could slice our matrix"
+    enroll_mat = normalize(enroll_mat)
+    test_mat = normalize(test_mat)
+    print("slicing enroll mat with 2048")
+    step = enroll_mat.shape[0]//2048 + 1
+    f = open(result_path, "w", encoding="utf-8")
+    print("steps:", step)
+    for i in tqdm.tqdm(range(step)):
+        start = i*2048
+        end = min(i*2048+2048, enroll_mat.shape[0])
+        # start from "start" to "end" rows of enroll_mat
+        scores = np.matmul(enroll_mat[start: end, :], test_mat.T)
+        for ind in range(start, end):
+            query = inverse_enroll_idx_dict[ind]
+            a_list = output_dict[query]
+            for a_key in a_list:
+                a_id = test_idx_dict[a_key]
+                distance = scores[ind-start, a_id]
+                f.write(query + " " + a_key + " " + str(distance) + "\n")
+    f.close()
 
 
 def centering_mean(enroll_mat):
@@ -94,7 +101,6 @@ def main():
             mean_feat = np.loadtxt(opt.mean_vec)
         enroll_mat = enroll_mat - mean_feat
         test_mat = enroll_mat - mean_feat
-
 
     enroll_idx_dict = dict(enroll_idx_dict)
     test_idx_dict = dict(test_idx_dict)
