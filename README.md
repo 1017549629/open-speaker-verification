@@ -47,9 +47,10 @@ Preparation scripts will be released soon.
 
 **NOTE**: The test set is VOX1-O(cleaned) dataset and training set is VoxCeleb2-dev. Backend is cosine similarity scoring. The minDCF criterion is the same as  VoxSRC2020.
 
-| Model | Backbone          | Metric | feature | batch size | config | raw EER | raw DCF | checkpoint |
-|:---------:|:-----------------:|:------------:|:------------:|:------------:|:------------:|--------------|:------------:|--------------|
-| ResNet34-AM-VoxCeleb2 | ResNet34       | AMSoftmax, scale=30, margin=0.2 | 81 FBANK(including energy) | 128 | [conf](configs/asv/classifier/vox2_resnet34_b128x4.py) | 1.207 | 0.0738 | [ckpt](https://drive.google.com/file/d/1d5cJQsLNUrZ3-IIiBPI8l-7W7G_jqKV8/view?usp=sharing) |
-| ResNet34-AM-VoxCeleb2-syncBN | ResNet34 | AMSoftmax, scale=30, margin=0.2 | 81 FBANK(including energy) | 128 | [conf](configs/asv/classifier/vox2_resnet34_b128x4_syncBN.py) | 1.196 | 0.0791 | [ckpt](https://drive.google.com/file/d/1rJ9tMGU4OVXQwF66e0Z-0scDc9MmipHo/view?usp=sharing) |
-| SEResNet34-AM-VoxCeleb2 | SEResNet34 | AMSoftmax, scale=30, margin=0.2 | 81 FBANK(including energy) | 100 | [conf](configs/asv/classifier/vox2_seresnet34_b100x4.py) | 1.121 | 0.0771 | [ckpt](https://drive.google.com/file/d/1jPIDDNnv_IY5rR5CUA6bqSiw-dSAP_oM/view?usp=sharing) |
-| SEResNet34-AM-VoxCeleb2-syncBN | SEResNet34 | AMSoftmax, scale=30, margin=0.2 | 81 FBANK(including energy) | 100 | [conf](configs/asv/classifier/vox2_seresnet34_b100x4_syncBN.py) | 1.175 | 0.0745 | realeased soon |
+| Model | Backbone          | Metric | feature | batch size | config | raw EER on Vox1-O(cleaned) | raw DCF | raw EER on Vox1-H | checkpoint |
+|:---------:|:-----------------:|:------------:|:------------:|:------------:|:------------:|--------------|:------------:|:------------:|:------------:|
+| ResNet34-AM-VoxCeleb2 | ResNet34       | AMSoftmax, scale=30, margin=0.2 | 81 FBANK(including energy) | 128 | [conf](configs/asv/classifier/vox2_resnet34_b128x4.py) | 1.207 | 0.0738 | 2.44 | [ckpt](https://drive.google.com/file/d/1d5cJQsLNUrZ3-IIiBPI8l-7W7G_jqKV8/view?usp=sharing) |
+| ResNet34-AM-VoxCeleb2-syncBN | ResNet34 | AMSoftmax, scale=30, margin=0.2 | 81 FBANK(including energy) | 128 | [conf](configs/asv/classifier/vox2_resnet34_b128x4_syncBN.py) | 1.196 | 0.0791 | - | [ckpt](https://drive.google.com/file/d/1rJ9tMGU4OVXQwF66e0Z-0scDc9MmipHo/view?usp=sharing) |
+| SEResNet34-AM-VoxCeleb2 | SEResNet34 | AMSoftmax, scale=30, margin=0.2 | 81 FBANK(including energy) | 100 | [conf](configs/asv/classifier/vox2_seresnet34_b100x4.py) | 1.121 | 0.0771 | 2.43 | [ckpt](https://drive.google.com/file/d/1jPIDDNnv_IY5rR5CUA6bqSiw-dSAP_oM/view?usp=sharing) |
+| SEResNet34-AM-VoxCeleb2-syncBN | SEResNet34 | AMSoftmax, scale=30, margin=0.2 | 81 FBANK(including energy) | 100 | [conf](configs/asv/classifier/vox2_seresnet34_b100x4_syncBN.py) | 1.175 | 0.0745 | - | realeased soon |
+| SEResNet34-AM-VoxCeleb2(with checkpointed) | SEResNet34 | AMSoftmax, scale=30, margin=0.2 | 81 FBANK(including energy) | 128 | [conf](configs/asv/classifier/vox2_seresnet34_b128x4.py) | 1.07 | 0.0747 | 2.43 | - |
