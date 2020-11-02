@@ -14,7 +14,7 @@ The code is tested with PyTorch 1.6.0 and CUDA 10.2. **NOTE**: The pretrained mo
 
 ## Data preparation
 
-All features adopted in our training frameworks are extracted from [Kaldi](https://github.com/kaldi-asr/kaldi), cepstral mean and variance normalized(CMVN) and no VAD implemented.
+All features adopted in our training frameworks are extracted from [Kaldi](https://github.com/kaldi-asr/kaldi), cepstral mean normalized(CMN) and no VAD implemented.
 
 Preparation scripts will be released soon.
 
