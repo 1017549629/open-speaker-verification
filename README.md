@@ -36,12 +36,13 @@ Preparation scripts will be released soon.
 ### Pooling Method
 
 - [x] [STATS pooling](mmcls/models/necks/STP.py)
-- [ ] Self-Attention pooling
+- [x] [SelfAttention pooling(channel-dependent in ECAPA_TDNN)](mmcls/models/necks/ecapa_ASP.py)
 - [ ] MultiHeadAttention pooling
 
 ### Metric
 
 - [x] [AmSoftmax](mmcls/models/heads/am_head.py)
+- [x] [AAMSoftmax](mmcls/models/heads/aam_head.py)
 
 ## Released Model Benchmark
 
