@@ -26,6 +26,10 @@ Preparation scripts will be released soon.
 - [ ] balanced speaker dataset
 - [ ] dynamic speaker dataset
 
+### pipeline
+
+- [x] [SpecCutout](mmcls/datasets/pipelines/formating.py)
+
 ### backbone
 
 - [x] [ResNet34](mmcls/models/backbones/resnet_cifar.py)

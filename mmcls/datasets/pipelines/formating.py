@@ -6,6 +6,7 @@ import torch
 from PIL import Image
 
 from ..builder import PIPELINES
+import random
 
 
 def to_tensor(data):
@@ -154,3 +155,29 @@ class WrapFieldsToLists(object):
 
     def __repr__(self):
         return f'{self.__class__.__name__}()'
+
+
+@PIPELINES.register_module()
+class SpecCutout(object):
+
+    def __init__(self, keys, f_mask=8, t_mask=5):
+        self.keys = keys
+        self.t_mask = t_mask
+        self.f_mask = f_mask
+
+    def __call__(self, results):
+        for key in self.keys:
+            # print(key)
+            f_num = random.randint(0, self.f_mask)
+            t_num = random.randint(0, self.t_mask)
+            trange, frange = results[key].shape
+            mask = torch.zeros(results[key].shape)
+            start_point_t = random.randint(0, trange-t_num)
+            start_point_f = random.randint(0, frange-f_num)
+            mask[start_point_t: start_point_t+t_num, start_point_f:start_point_f+f_num] = 1
+            print(mask[start_point_t: start_point_t+t_num, start_point_f:start_point_f+f_num])
+            results[key] = results[key].masked_fill(mask.type(torch.bool), 0)
+        return results
+
+    def __repr__(self):
+        return self.__class__.__name__ + f'(keys={self.keys}, f_mask={self.f_mask}, t_mask={self.t_mask})'
