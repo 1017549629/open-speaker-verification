@@ -51,6 +51,8 @@ class ECAPA_ASP(nn.Module):
 
     def forward(self, x):
         # B,C,T to B,T,C
+        if len(x.shape) == 4:
+            x = x.reshape(x.shape[0], -1, x.shape[-1])
         x = x.transpose(1, 2)
         attn = self.W2(self.act(self.W1(x)))
         attn = F.softmax(attn, 1)

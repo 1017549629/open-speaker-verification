@@ -27,7 +27,8 @@ class AAMSoftmaxClsHead(ClsHead):
                  scale=30,
                  margin=0.2,
                  easy_margin=False,
-                 max_iteration=20000,
+                 max_iteration=80000,
+                 start_ratio=0.5,
                  margin_freq=10,
                  loss=dict(type='CrossEntropyLoss', loss_weight=1.0),
                  topk=(1, )):
@@ -38,6 +39,7 @@ class AAMSoftmaxClsHead(ClsHead):
         self._iter = 0
         self.freq = margin_freq
         self.max_iteration = max_iteration
+        self.start_ratio = start_ratio
         self.max_margin = margin
         self.m = 0
         self.easy_margin = easy_margin
@@ -66,10 +68,12 @@ class AAMSoftmaxClsHead(ClsHead):
 
     def _margin_schedule(self):
         iter = min(self._iter, self.max_iteration)
-        process = (iter/self.max_iteration - 1)*math.pi
+        process = max(
+            (iter - self.max_iteration * self.start_ratio)/(self.max_iteration*(1-self.start_ratio)),
+            0)
+        process = (process - 1)*math.pi
         process = (math.cos(process) + 1) / 2
         self.m = process * self.max_margin
-
         self.cos_m = math.cos(self.m)
         self.sin_m = math.sin(self.m)
 

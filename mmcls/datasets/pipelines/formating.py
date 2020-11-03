@@ -175,7 +175,7 @@ class SpecCutout(object):
             start_point_t = random.randint(0, trange-t_num)
             start_point_f = random.randint(0, frange-f_num)
             mask[start_point_t: start_point_t+t_num, start_point_f:start_point_f+f_num] = 1
-            print(mask[start_point_t: start_point_t+t_num, start_point_f:start_point_f+f_num])
+            # print(mask[start_point_t: start_point_t+t_num, start_point_f:start_point_f+f_num])
             results[key] = results[key].masked_fill(mask.type(torch.bool), 0)
         return results
 
