@@ -1,5 +1,7 @@
 from .cls_head import ClsHead
 from .linear_head import LinearClsHead
 from .am_head import AMSoftmaxClsHead
+from .aam_head import AAMSoftmaxClsHead
+from .softmaxproto_head import SoftmaxProtoHead
 
-__all__ = ['ClsHead', 'LinearClsHead', 'AMSoftmaxClsHead']
+__all__ = ['ClsHead', 'LinearClsHead', "AMSoftmaxClsHead", "AAMSoftmaxClsHead", 'SoftmaxProtoHead']

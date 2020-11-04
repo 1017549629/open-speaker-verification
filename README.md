@@ -47,6 +47,7 @@ Preparation scripts will be released soon.
 
 - [x] [AmSoftmax](mmcls/models/heads/am_head.py)
 - [x] [AAMSoftmax](mmcls/models/heads/aam_head.py)
+- [x] [AP+Softmax](mmcls/models/heads/softmaxproto_head.py)
 
 ## Released Model Benchmark
 
