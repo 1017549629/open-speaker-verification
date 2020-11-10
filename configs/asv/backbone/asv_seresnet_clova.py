@@ -10,7 +10,8 @@ model = dict(
         num_stages=4,
         out_indices=(3, ),
         style='pytorch',
-        norm_cfg=dict(type='BN', requires_grad=True, momentum=0.5)
+        norm_cfg=dict(type='BN', requires_grad=True, momentum=0.5),
+        with_cp=True
     ),
     neck=dict(
         type='StatsPooling',
