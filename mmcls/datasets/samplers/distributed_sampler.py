@@ -1,6 +1,8 @@
 import torch
 from torch.utils.data import DistributedSampler as _DistributedSampler
-# from mmcls.datasets import PKSpeakerDataset
+import math
+import numpy as np
+import random
 
 
 class DistributedSampler(_DistributedSampler):
@@ -22,10 +24,12 @@ class DistributedSampler(_DistributedSampler):
         # added to adapt PK sampling strategy
         self.do_pk = hasattr(dataset, "K")
         if self.do_pk:
-            print("Start using PK sampling strategy!")
+            if self.rank == 0:
+                print("Start using PK sampling strategy!")
             self.spkr_dataset_ids = dataset.spkr_dataset_ids
             self.K = dataset.K
             self.P = dataset.P
+            self.batch_size = self.P*self.K
 
     def __iter__(self):
         if not self.do_pk:
@@ -59,8 +63,7 @@ class DistributedSampler(_DistributedSampler):
             flattened_list = []
             flattened_label = []
 
-            for spkr, ark_idx in items:
-                ids = [d[1] for d in ark_idx]
+            for spkr, ids in items:
                 numSeg = (len(ids) // self.K) * self.K
                 rp = lol(torch.randperm(len(ids), generator=g).tolist()[:numSeg], self.K)
                 flattened_label.extend([spkr]*len(rp))
@@ -71,7 +74,7 @@ class DistributedSampler(_DistributedSampler):
             mixlabel = []
             mixmap = []
 
-            assert self.batch_size % self.K, \
+            assert self.batch_size % self.K == 0, \
                 "batchsize %d should be exactly divided by K %d" % (self.batch_size, self.K)
             tuple_batch_size = self.batch_size // self.K
 
@@ -84,6 +87,18 @@ class DistributedSampler(_DistributedSampler):
             all_indices = []
             for idx in mixmap:
                 all_indices.extend(flattened_list[idx])
-            round_len = len(all_indices) // (self.num_replicas * self.batch_size) * self.batch_size
-            sub_indices = all_indices[self.rank * round_len : (self.rank+1) * round_len]
+            round_len = (len(all_indices) // (self.num_replicas * self.batch_size)) * self.batch_size
+            sub_indices = all_indices[self.rank * round_len: (self.rank+1) * round_len]
+
+            # since round_len is definitely a bit smaller than the original len,
+            # to complement the original length, some chunks will be oversampled randomly
+            if self.round_up:
+                epoch_iter = math.ceil(self.total_size / (self.batch_size * self.num_replicas))
+                truncated_iter = round_len // self.batch_size
+                sub_indices = np.asarray(sub_indices)
+                split_batches = np.split(sub_indices, truncated_iter)
+                assert truncated_iter == len(split_batches), "%d, %d" % (truncated_iter, len(split_batches))
+                random_batches_selected = random.sample(split_batches, epoch_iter - truncated_iter)
+                split_batches.extend(random_batches_selected)
+                sub_indices = np.concatenate(split_batches).tolist()
             return iter(sub_indices)

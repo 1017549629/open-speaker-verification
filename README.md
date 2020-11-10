@@ -23,7 +23,8 @@ Preparation scripts will be released soon.
 ### dataset
 
 - [x] [random speaker dataset](mmcls/datasets/speaker_dataset.py)
-- [ ] balanced speaker dataset
+- [x] [balanced speaker dataset PK sampler](mmcls/datasets/pk_speaker_dataset.py)
+- [x] [PK sampler for distributed dataloader](mmcls/datasets/samplers/distributed_sampler.py) **Important for metric learning in SV**
 - [ ] dynamic speaker dataset
 
 ### pipeline

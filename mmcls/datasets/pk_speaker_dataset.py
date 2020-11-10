@@ -15,11 +15,10 @@ class PKSpeakerDataset(SpeakerDataset):
         self.spkr_dataset_ids = self.create_spkr_dataset()
 
     def create_spkr_dataset(self):
-        spkr_dataset = {}
-        for idx, item_dict in enumerate(self.data_infos):
-            ark = item_dict["img"]
-            target = item_dict["gt_label"]
-            lst = spkr_dataset.get(target, [])
-            lst.append([ark, idx])
-            spkr_dataset[target] = lst
-        return spkr_dataset
+        spk2id = {}
+        for i, dic in enumerate(self.data_infos):
+            spk = dic["gt_label"]
+            lst = spk2id.get(spk, [])
+            lst.append(i)
+            spk2id[spk] = lst
+        return spk2id
