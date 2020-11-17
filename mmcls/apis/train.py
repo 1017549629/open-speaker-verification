@@ -6,11 +6,14 @@ from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmcv.runner import DistSamplerSeedHook, EpochBasedRunner, build_optimizer
 
 from mmcls.core import (DistEvalHook, DistOptimizerHook, EvalHook,
-                        Fp16OptimizerHook, ReduceLROnPlateauHook,
-                        DistReduceLROnPlateauHook)
+                        Fp16OptimizerHook, CyclicTriLrUpdaterHook)
+from mmcv.runner.hooks.lr_updater import HOOKS
 from mmcls.datasets import build_dataloader, build_dataset
-from mmcls.utils import get_root_logger
-import torch.utils.checkpoint as cp
+from mmcls.utils import get_root_logger, get_lr_hook
+
+
+HOOKS.register_module(name="CyclicTriLrUpdaterHook", module=CyclicTriLrUpdaterHook)
+
 
 def set_random_seed(seed, deterministic=False):
     """Set random seed.
@@ -83,6 +86,7 @@ def train_model(model,
     # fp16 setting
     fp16_cfg = cfg.get('fp16', None)
     if fp16_cfg is not None:
+        logger.info("Start using FP16 mixed precision training.")
         optimizer_config = Fp16OptimizerHook(
             **cfg.optimizer_config, **fp16_cfg, distributed=distributed)
     elif distributed and 'type' not in cfg.optimizer_config:
@@ -90,11 +94,12 @@ def train_model(model,
     else:
         optimizer_config = cfg.optimizer_config
 
+    lr_config = get_lr_hook(cfg.lr_config, HOOKS)
+
     # register hooks
-    runner.register_training_hooks(cfg.get("lr_config",None), optimizer_config,
+    runner.register_training_hooks(lr_config, optimizer_config,
                                    cfg.checkpoint_config, cfg.log_config,
                                    cfg.get('momentum_config', None))
-
     if distributed:
         runner.register_hook(DistSamplerSeedHook())
 
@@ -112,18 +117,6 @@ def train_model(model,
         eval_cfg = cfg.get('evaluation', {})
         eval_hook = DistEvalHook if distributed else EvalHook
         runner.register_hook(eval_hook(val_dataloader, **eval_cfg))
-
-
-        if cfg.get("LRReducer", None) is not None:
-            LRReducer_hook = DistReduceLROnPlateauHook if distributed \
-                else ReduceLROnPlateauHook
-            interval = cfg.LRReducer.get("interval", 10000)
-            patience = cfg.LRReducer.get("patience", 2)
-            gamma = cfg.LRReducer.get("gamma", 0.1)
-            # print("interval:", interval)
-            runner.register_hook(
-                LRReducer_hook(val_dataloader,
-                               interval, patience, gamma))
 
     if cfg.resume_from:
         runner.resume(cfg.resume_from)
