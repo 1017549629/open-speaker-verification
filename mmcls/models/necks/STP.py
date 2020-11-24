@@ -53,12 +53,15 @@ class Stats_pooling(nn.Module):
 class StatsPooling(nn.Module):
     """Stats Pooling neck.
     """
-    def __init__(self, in_plane, emb_dim, emb_bn=True, emb_affine=True, activation_type="relu", norm_type="BN1d"):
+    def __init__(self, in_plane, emb_dim, emb_bn=True, emb_affine=True,
+                 activation_type="relu", norm_type="BN1d", output_stage=(0,)):
         super(StatsPooling, self).__init__()
         self.avgpool = Stats_pooling(in_plane)
         embedding = []
         initial_dim = self.avgpool.out_dim
+        self.output_stage = output_stage
         if isinstance(emb_dim, list):
+            self.stages = len(emb_dim)
             for e_dim, do_bn, do_affine, act_type in zip(emb_dim, emb_bn, emb_affine, activation_type):
                 fc = [nn.Linear(initial_dim, e_dim)]
                 initial_dim = e_dim
@@ -68,6 +71,7 @@ class StatsPooling(nn.Module):
                     fc.append(build_norm_layer(cfg, e_dim)[1])
                 embedding.append(nn.Sequential(*fc))
         else:
+            self.stages = 1
             embedding.append(nn.Linear(initial_dim, emb_dim))
             embedding.append(select_activation(activation_type))
             if emb_bn:
@@ -80,4 +84,66 @@ class StatsPooling(nn.Module):
 
     def forward(self, inputs):
         out = self.avgpool(inputs)
-        return self.embedding(out)
+        if self.stages > 1 and len(self.output_stage) > 1 and self.training:
+            # contains more than one fc layers and needs to output more than one vector and training mode
+            embs = []
+            for fc in self.embedding:
+                out = fc(out)
+                embs.append(out)
+            results = []
+            for stage in self.output_stage:
+                results.append(embs[stage])
+            return tuple(results)
+        else:
+            return self.embedding(out)
+
+
+@NECKS.register_module()
+class StatsPoolingMSEA(nn.Module):
+    """Stats Pooling neck.
+    """
+    def __init__(self, in_plane, emb_dim, emb_bn=True, emb_affine=True,
+                 activation_type="relu", norm_type="BN1d", output_stage=(0,)):
+        super(StatsPoolingMSEA, self).__init__()
+        assert isinstance(in_plane, tuple)
+        self.avgpool = [Stats_pooling(plane) for plane in in_plane]
+        embedding = []
+        initial_dim = sum([pool.out_dim for pool in self.avgpool])
+        self.output_stage = output_stage
+        if isinstance(emb_dim, list):
+            self.stages = len(emb_dim)
+            for e_dim, do_bn, do_affine, act_type in zip(emb_dim, emb_bn, emb_affine, activation_type):
+                fc = [nn.Linear(initial_dim, e_dim)]
+                initial_dim = e_dim
+                fc.append(select_activation(act_type))
+                if do_bn:
+                    cfg = dict(type=norm_type, requires_grad=True, momentum=0.5, affine=do_affine)
+                    fc.append(build_norm_layer(cfg, e_dim)[1])
+                embedding.append(nn.Sequential(*fc))
+        else:
+            self.stages = 1
+            embedding.append(nn.Linear(initial_dim, emb_dim))
+            embedding.append(select_activation(activation_type))
+            if emb_bn:
+                cfg = dict(type=norm_type, requires_grad=True, momentum=0.5, affine=emb_affine)
+                embedding.append(build_norm_layer(cfg, emb_dim)[1])
+        self.embedding = nn.Sequential(*embedding)
+
+    def init_weights(self):
+        pass
+
+    def forward(self, inputs):
+        out = [pool(inp) for pool, inp in zip(self.avgpool, inputs)]
+        out = torch.cat(out, dim=-1)
+        if self.stages > 1 and len(self.output_stage) > 1 and self.training:
+            # contains more than one fc layers and needs to output more than one vector and training mode
+            embs = []
+            for fc in self.embedding:
+                out = fc(out)
+                embs.append(out)
+            results = []
+            for stage in self.output_stage:
+                results.append(embs[stage])
+            return tuple(results)
+        else:
+            return self.embedding(out)
