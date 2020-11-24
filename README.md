@@ -3,6 +3,8 @@
 
 ## News
 
+[11/24/2020] Important future updates will be focused on VoxSRC2020 Tech Reports. Also a large scale ID(1M+ Identities) training scripts will be updated later. More model benchmarks will be updated :)
+
 [10/25/2020] I have released my baseline system ResNet34-AM-VoxCeleb2 based on **mmclassification**. Thanks to [mmclassification](https://github.com/open-mmlab/mmclassification), I can fully utilize all the functions and modules provided without paying a lot attention on the training process.
 
 ## Introduction
