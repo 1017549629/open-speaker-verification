@@ -27,7 +27,7 @@ Preparation scripts will be released soon.
 - [x] [random speaker dataset](mmcls/datasets/speaker_dataset.py)
 - [x] [balanced speaker dataset PK sampler](mmcls/datasets/pk_speaker_dataset.py)
 - [x] [PK sampler for distributed dataloader](mmcls/datasets/samplers/distributed_sampler.py) **Important for metric learning in SV**
-- [x] [Vaex based speaker dataset](mmcls/datasets/pk_speaker_dataset.py) When your feat.scp file is quite large (e.g. 10M+ lines), this speaker dataset is quite recommended since Vaex format can save both memory and loading time. Instruction are provided to help you transform your kaldi format file to vaex based file. Note: this data set also provide a "pseudo random" window selection sampling strategy as "pseudo".
+- [x] [Vaex based speaker dataset](mmcls/datasets/vaex_speaker_dataset.py) When your feat.scp file is quite large (e.g. 10M+ lines), this speaker dataset is quite recommended since Vaex format can save both memory and loading time. Instruction are provided to help you transform your kaldi format file to vaex based file. Note: this data set also provide a "pseudo random" window selection sampling strategy as "pseudo".
 - [ ] dynamic speaker dataset
 
 Instructions to build kaldi format file to vaex format (highly recomended to replace normal speaker dataset with vaex based speaker dataset):
