@@ -38,7 +38,7 @@ Preparation scripts will be released soon.
 - [x] [ResNet34](mmcls/models/backbones/resnet_cifar.py)
 - [x] [SEResNet34](mmcls/models/backbones/seresnet_asv.py)
 - [x] [SEResNet34-MSEA](configs/asv/backbone/asv_resnet_msea.py)
-- [ ] RES-SE-TDNN
+- [x] [RES-SE-TDNN](mmcls/models/backbones/RES_SE_TDNN.py)
 
 ### Pooling Method
 
